@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type Customer struct {
@@ -16,11 +18,21 @@ type Customer struct {
 var customers []Customer
 
 func main() {
-	http.HandleFunc("/Customers", getcustomers)
-	http.HandleFunc("/Customer/add", addCustomer)
-	http.HandleFunc("/Customer/update", updateCustomer)
+	r := mux.NewRouter()
 
-	http.ListenAndServe(":8080", nil)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"*"},
+	})
+
+	r.HandleFunc("/Customers", getcustomers).Methods("GET")
+	r.HandleFunc("/Customer/add", addCustomer).Methods("POST")
+	r.HandleFunc("/Customer/update", updateCustomer).Methods("PUT")
+
+	handler := c.Handler(r)
+
+	http.ListenAndServe(":8080", handler)
 }
 
 func getcustomers(w http.ResponseWriter, r *http.Request) {

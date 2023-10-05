@@ -18,6 +18,7 @@
     "vuetify": "^3.4.0-alpha.1"
   },
   "dependencies": {
+    "axios": "^1.5.1",
     "sass": "^1.68.0"
   }
 }

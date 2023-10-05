@@ -21,4 +21,5 @@ export default defineNuxtConfig({
       );
     },
   },
+  plugins: ["~~/plugins/axios.ts"],
 });
