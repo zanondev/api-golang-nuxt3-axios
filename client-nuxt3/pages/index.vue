@@ -1,9 +1,9 @@
 <template>
   <v-container align="center">
     <h2>Register customer</h2>
-    <v-form @submit.prevent="cadastrarCliente">
-      <v-text-field v-model="novoCliente.name" label="Name" required></v-text-field>
-      <v-text-field v-model="novoCliente.email" label="Email" required></v-text-field>
+    <v-form @submit.prevent="registerCustomer">
+      <v-text-field v-model="newClient.name" label="Name" required></v-text-field>
+      <v-text-field v-model="newClient.email" label="Email" required></v-text-field>
       <v-btn type="submit" color="primary">Submit</v-btn>
     </v-form>
   </v-container>
@@ -13,24 +13,24 @@
 export default {
   data() {
     return {
-      novoCliente: {
+      newClient: {
         name: '',
         email: ''
       }
     };
   },
   methods: {
-    async cadastrarCliente() {
+    async registerCustomer() {
       try {
-        await this.$api.post('/Customer/add', this.novoCliente);
+        await this.$api.post('/Customer/add', this.newClient);
         
-        this.novoCliente.name = '';
-        this.novoCliente.email = '';
+        this.newClient.name = '';
+        this.newClient.email = '';
 
         alert('Customer registered successfully');
       } catch (error) {
         console.error('Error:', error);
-        alert('Error: ', error);
+        alert('Error: ' + error);
       }
     }
   }
@@ -38,8 +38,7 @@ export default {
 </script>
 
 <style>
-.v-container{
+.v-container {
   width: 30%!important;
 }
-
 </style>
