@@ -7,76 +7,76 @@ import (
 	"github.com/google/uuid"
 )
 
-type Task struct {
+type Customer struct {
 	ID    string `json:"id"`
-	Title string `json:"title"`
-	Done  bool   `json:"done"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-var tasks []Task
+var customers []Customer
 
 func main() {
-	http.HandleFunc("/tasks", getTasks)
-	http.HandleFunc("/tasks/add", addTask)
-	http.HandleFunc("/tasks/update", updateTask)
+	http.HandleFunc("/Customers", getcustomers)
+	http.HandleFunc("/Customer/add", addCustomer)
+	http.HandleFunc("/Customer/update", updateCustomer)
 
 	http.ListenAndServe(":8080", nil)
 }
 
-func getTasks(w http.ResponseWriter, r *http.Request) {
+func getcustomers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(tasks)
+	json.NewEncoder(w).Encode(customers)
 }
 
-func addTask(w http.ResponseWriter, r *http.Request) {
+func addCustomer(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var newTask Task
-	newTask.ID = uuid.New().String()
+	var newCustomer Customer
+	newCustomer.ID = uuid.New().String()
 
-	err := json.NewDecoder(r.Body).Decode(&newTask)
+	err := json.NewDecoder(r.Body).Decode(&newCustomer)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	tasks = append(tasks, newTask)
+	customers = append(customers, newCustomer)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(newTask)
+	json.NewEncoder(w).Encode(newCustomer)
 }
 
-func updateTask(w http.ResponseWriter, r *http.Request) {
+func updateCustomer(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var updatedTask Task
+	var updateCustomer Customer
 
-	err := json.NewDecoder(r.Body).Decode(&updatedTask)
+	err := json.NewDecoder(r.Body).Decode(&updateCustomer)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	for i, task := range tasks {
-		if task.ID == updatedTask.ID {
-			tasks[i] = updatedTask
+	for i, customer := range customers {
+		if customer.ID == updateCustomer.ID {
+			customers[i] = updateCustomer
 			break
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(updatedTask)
+		json.NewEncoder(w).Encode(updateCustomer)
 	}
 }
