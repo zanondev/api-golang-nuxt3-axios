@@ -1,0 +1,8 @@
+@forward 'vuetify/settings' with (
+  $utilities: false,
+  $button-color: red,
+  $button-font-weight: 100,
+  $button-border-radius: 3px,
+  $button-text-transform: capitalize,
+  $card-border-radius: 30px
+);
