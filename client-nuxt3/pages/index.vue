@@ -35,13 +35,25 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="customer in customers" :key="customer.id">
+          <tr
+            class="text-center"
+            v-for="customer in customers"
+            :key="customer.id"
+          >
             <td>{{ customer.id }}</td>
             <td>{{ customer.name }}</td>
             <td>{{ customer.email }}</td>
-            <v-btn color="secondary" @click="getCustomerToUpdate(customer)"
-              >Edit</v-btn
-            >
+            <td>
+              <v-btn color="secondary" @click="getCustomerToUpdate(customer)"
+                >Edit</v-btn
+              >
+              <v-btn
+                color="secondary"
+                @click="deleteCustomer(customer)"
+                class="ml-2"
+                >Delete</v-btn
+              >
+            </td>
           </tr>
         </tbody>
       </v-table>
@@ -113,6 +125,17 @@ export default {
         this.customerModel.email = "";
 
         alert("Customer updated successfully");
+        await this.getCustomers();
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Error: " + error);
+      }
+    },
+    async deleteCustomer(customer) {
+      try {
+        await this.$api.delete(`/Customer/remove/${customer.id}`);
+
+        alert("Customer deleted successfully");
         await this.getCustomers();
       } catch (error) {
         console.error("Error:", error);

@@ -29,6 +29,7 @@ func main() {
 	r.HandleFunc("/Customers", getcustomers).Methods("GET")
 	r.HandleFunc("/Customer/add", addCustomer).Methods("POST")
 	r.HandleFunc("/Customer/update", updateCustomer).Methods("PUT")
+	r.HandleFunc("/Customer/remove/{id}", removeCustomer).Methods("DELETE")
 
 	handler := c.Handler(r)
 
@@ -91,4 +92,32 @@ func updateCustomer(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(updateCustomer)
 	}
+}
+
+func removeCustomer(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	vars := mux.Vars(r)
+	customerID := vars["id"]
+
+	index := -1
+	for i, customer := range customers {
+		if customer.ID == customerID {
+			index = i
+			break
+		}
+	}
+
+	if index == -1 {
+		http.Error(w, "Customer not found", http.StatusNotFound)
+		return
+	}
+
+	customers = append(customers[:index], customers[index+1:]...)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(struct{ Message string }{"Customer removed successfully"})
 }
