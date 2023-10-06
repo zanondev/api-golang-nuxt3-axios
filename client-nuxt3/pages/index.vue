@@ -4,12 +4,12 @@
       <h2>Register customer</h2>
       <v-form @submit.prevent="registerCustomer">
         <v-text-field
-          v-model="newClient.name"
+          v-model="customerModel.name"
           label="Name"
           required
         ></v-text-field>
         <v-text-field
-          v-model="newClient.email"
+          v-model="customerModel.email"
           label="Email"
           required
         ></v-text-field>
@@ -53,23 +53,25 @@
 export default {
   data() {
     return {
-      newClient: {
+      customerModel: {
         name: "",
         email: "",
       },
       customers: [],
       isUpdating: false,
+      selectedCustomerId: null,
     };
   },
   methods: {
     async registerCustomer() {
       try {
-        await this.$api.post("/Customer/add", this.newClient);
+        await this.$api.post("/Customer/add", this.customerModel);
 
-        this.newClient.name = "";
-        this.newClient.email = "";
+        this.customerModel.name = "";
+        this.customerModel.email = "";
 
         alert("Customer registered successfully");
+        await this.getCustomers();
       } catch (error) {
         console.error("Error:", error);
         alert("Error: " + error);
@@ -78,9 +80,7 @@ export default {
     async getCustomers() {
       try {
         const response = await this.$api.get("/Customers");
-        // Atualize a lista de clientes com os dados obtidos
         this.customers = response.data;
-        alert("Customers retrieved successfully");
       } catch (error) {
         console.error("Error:", error);
         alert("Error: " + error);
@@ -89,11 +89,9 @@ export default {
     getCustomerToUpdate(customer) {
       try {
         this.isUpdating = true;
-
-        
-        this.newClient.name = customer.name;
-        this.newClient.email = customer.email;
-        // alert("Customers retrieved successfully");
+        this.selectedCustomerId = customer.id;
+        this.customerModel.name = customer.name;
+        this.customerModel.email = customer.email;
       } catch (error) {
         console.error("Error:", error);
         alert("Error: " + error);
@@ -102,7 +100,20 @@ export default {
     async updateCustomer() {
       try {
         this.isUpdating = false;
-        // alert("Customers retrieved successfully");
+
+        const updatedCustomer = {
+          id: this.selectedCustomerId,
+          name: this.customerModel.name,
+          email: this.customerModel.email,
+        };
+
+        await this.$api.put("/Customer/update", updatedCustomer);
+
+        this.customerModel.name = "";
+        this.customerModel.email = "";
+
+        alert("Customer updated successfully");
+        await this.getCustomers();
       } catch (error) {
         console.error("Error:", error);
         alert("Error: " + error);
